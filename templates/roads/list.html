@@ -1,0 +1,231 @@
+{% extends "common/base.html" %}
+<!-- Title -->
+{% block title %}Roads{% endblock %}
+<!-- Active Menu -->
+{% set active_page = "roads" %}
+<!-- Content Wrapper. Contains page content -->
+{% block content %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-9">
+                    <h1 class="m-0">{{ menu }}</h1>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-3">
+                    <form method="get" action="/roads_excel_export">
+                        <button
+                            type="submit"
+                            class="btn float-right"
+                            style="border-radius: 50%; border-color: #d3d3d3; margin-left: 5px"
+                            title="Export"
+                        >
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </form>
+
+                    <button
+                        type="button"
+                        class="btn float-right"
+                        data-toggle="modal"
+                        data-target="#exampleModal"
+                        style="border-radius: 50%; border-color: #d3d3d3"
+                        title="Import"
+                    >
+                        <i class="fas fa-upload"></i>
+                    </button>
+                </div>
+                <!-- /.col -->
+            </div>
+            {% if request.session['success'] %}
+            <div class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <i class="icon fas fa-check"></i>{{request.session.get('success')}}
+                {% set del = request.session.__delitem__('success') %}
+            </div>
+            {% endif %}
+            {% if request.session['reg_error'] %}
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h5><i class="icon fas fa-exclamation-triangle"></i> 警告</h5>
+                {% if request.session['reg_error'] is not string %}
+                <ul>
+                    {% for i in request.session.get('reg_error') %}
+                    <li>{{i}}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                    {{request.session.get('reg_error')}}
+                {% endif %}
+                {% set del = request.session.__delitem__('reg_error') %}
+            </div>
+            {% endif %}
+            {% if request.session['error'] %}
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h5><i class="icon fas fa-exclamation-triangle"></i> 警告</h5>
+                {{request.session.get('error')}}
+                {% set del = request.session.__delitem__('error') %}
+            </div>
+            {% endif %}
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+        <div class="container-fluid">
+            <div class="card card-primary card-outline">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fa fa-search mr-2"></i>検索条件</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <!-- form start -->
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                            <label for="col0" class="col-sm-2 col-form-label">Rec ID</label>
+                            <div class="col-sm-10">
+                                <input
+                                    type="text"
+                                    class="form-control column_filter"
+                                    id="col0"
+                                    placeholder="Rec ID"
+                                />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="col1" class="col-sm-2 col-form-label">Code</label>
+                            <div class="col-sm-10">
+                                <input
+                                    type="text"
+                                    class="form-control column_filter"
+                                    id="col1"
+                                    placeholder="Code"
+                                />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="col2" class="col-sm-2 col-form-label">Name</label>
+                            <div class="col-sm-10">
+                                <input
+                                    type="text"
+                                    class="form-control column_filter"
+                                    id="col2"
+                                    placeholder="Name"
+                                />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="col3" class="col-sm-2 col-form-label">Date From</label>
+                            <div class="col-sm-10">
+                                <input
+                                    type="text"
+                                    class="form-control column_filter"
+                                    id="col3"
+                                    placeholder="Date From"
+                                />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="col4" class="col-sm-2 col-form-label">Date To</label>
+                            <div class="col-sm-10">
+                                <input
+                                    type="text"
+                                    class="form-control column_filter"
+                                    id="col4"
+                                    placeholder="Date To"
+                                />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+            <div class="card card-primary card-outline">
+                <!-- card-header -->
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fa fa-list mr-2"></i>検索結果一覧</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="data_list" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Rec ID</th>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Date From</th>
+                                <th>Date To</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for road in roads %}
+                            <tr>
+                                <td>{{road.rec_id}}</td>
+                                <td>{{road.code}}</td>
+                                <td>{{road.name}}</td>
+                                <td>{{road.date_from}}</td>
+                                <td>{{road.date_to}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /.content -->
+</div>
+
+<!-- Modal -->
+<div
+    class="modal fade"
+    id="exampleModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">File Upload</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" action="/roads" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="file" id="exampleInputFile" name="excel_file" />
+                            <label for=""></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> Upload
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- /.content-wrapper -->
+{% endblock %}

@@ -1,0 +1,40 @@
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="#" class="brand-link">
+        <img
+            src="static/images/logomark2.png"
+            alt="Nexco Logo"
+            class="brand-image"
+            style="opacity: 1"
+        />
+        <span class="brand-text font-weight-bold large">Nexco Sample</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul
+                class="nav nav-pills nav-sidebar flex-column"
+                data-widget="treeview"
+                role="menu"
+                data-accordion="false"
+            >
+                <li class="nav-item">
+                    <a href="/roads" 
+                        {% if active_page == "roads" %} 
+                            class="nav-link active"
+                        {% else %}
+                            class="nav-link"
+                        {% endif %}>
+                        <i class="nav-icon fas fa-road"></i>
+                        <p class="text">Roads</p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+</aside>
